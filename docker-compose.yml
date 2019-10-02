@@ -1,0 +1,40 @@
+# Use root/example as user/password credentials
+version: '3.7'
+services:
+  https-portal:
+   image: steveltn/https-portal:1.7.3
+   ports:
+      - '80:80'
+      - '443:443'
+    links:
+      - app
+    # restart: always
+    environment:
+      DOMAINS: 'example.com -> http://app:9443'
+      STAGE: 'staging'
+      FORCE_RENEW: 'true'
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo/db:/data/db
+      - ./mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      MONGO_INITDB_DATABASE: kinchan
+      MONGO_INITDB_ROOT_USERNAME: userName
+      MONGO_INITDB_ROOT_PASSWORD: password
+    command: mongod --auth
+  app:
+    image: library/node
+    container_name: kinchan_node
+    restart: always
+    ports:
+      - 9443:9443
+    volumes:
+      - ./:/src/
+    working_dir: "/src"
+    command: [sh, -c, npm install && node index.js]
+    links: 
+      - 'mongo'
