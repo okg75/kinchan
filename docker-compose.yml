@@ -2,8 +2,8 @@
 version: '3.7'
 services:
   https-portal:
-   image: steveltn/https-portal:1.7.3
-   ports:
+    image: steveltn/https-portal:1.7.3
+    ports:
       - '80:80'
       - '443:443'
     links:
